@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="hal.amorce_projet_gd.PortefeuilleController">
+    <ComboBox fx:id="cryptoSelector"/>
+    <LineChart fx:id="lineChart">
+        <xAxis>
+            <CategoryAxis label="Time"/>
+        </xAxis>
+        <yAxis>
+            <NumberAxis label="Price"/>
+        </yAxis>
+    </LineChart>
+</VBox>
