@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="hal.amorce_projet_gd.DashboardController" spacing="10">
-    <!-- Add buttons or other controls to navigate to different parts of the application -->
-    <Button fx:id="exchangeRateButton" text="View Exchange Rates" onAction="#viewExchangeRates"/>
-    <Button fx:id="portfolioButton" text="View Portfolio" onAction="#viewPortfolio"/>
-    <!-- Add more buttons as needed -->
-    <Button fx:id="transactionButton" text="Gérer les Transactions" onAction="#openTransactionManagement"/>
-
-
-</VBox>
+<BorderPane fx:id="mainPane"  xmlns:fx="http://javafx.com/fxml/1" fx:controller="hal.amorce_projet_gd.DashboardController">
+    <left>
+        <!-- Barre latérale avec des boutons et le solde pour la navigation -->
+        <VBox spacing="10">
+            <Button text="Historique" fx:id="historyButton" onAction="#handleHistory"/>
+            <Button text="BTC" fx:id="btcButton" onAction="#handleBTC"/>
+            <Button text="ETH" fx:id="ethButton" onAction="#handleETH"/>
+            <Button text="SOL" fx:id="solButton" onAction="#handleSOL"/>
+            <Button text="Mon Portefeuille" fx:id="portfolioButton" onAction="#handlePortfolio"/>
+            <Label fx:id="balanceLabel" text="Solde actuel: 1000.0 USD"/> <!-- Solde affiché ici -->
+        </VBox>
+    </left>
+    <center>
+        <!-- Zone pour afficher le contenu du graphique et autre contenu -->
+        <fx:include source="portefeuille-view.fxml"/>
+    </center>
+</BorderPane>

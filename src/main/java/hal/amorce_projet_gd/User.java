@@ -1,18 +1,14 @@
 package hal.amorce_projet_gd;
 
 public class User {
-    private String id;
     private String username;
     private String password;
+    private double balance;
 
-    public User(String id, String username, String password) {
-        this.id = id;
+    public User(String username, String password, double balance) {
         this.username = username;
         this.password = password;
-    }
-
-    public String getId() {
-        return id;
+        this.balance = balance;
     }
 
     public String getUsername() {
@@ -23,5 +19,11 @@ public class User {
         return password;
     }
 
-    // Vous pouvez ajouter d'autres méthodes ou champs si nécessaire.
+    public double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
 }

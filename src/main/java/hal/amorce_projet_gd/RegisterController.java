@@ -31,7 +31,7 @@ public class RegisterController {
     public void switchToLogin(ActionEvent event) throws Exception {
         Stage stage = (Stage) usernameField.getScene().getWindow();
         // Ensure this path correctly points to the login.fxml file
-        Parent root = FXMLLoader.load(getClass().getResource("/hal/amorce_projet_gd/login.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         stage.setScene(new Scene(root));
         stage.show();
     }
