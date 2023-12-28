@@ -1,21 +1,40 @@
-// Portfolio.java
 package hal.amorce_projet_gd;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Portfolio {
-    private String id;
-    private List<Transaction> transactions;  // Changed from Monnaie to Transaction
+class Portfolio {
+    private Map<String, Double> assets; // maps crypto ID to quantity owned
 
-    public Portfolio(String id) {
-        this.id = id;
-        this.transactions = new ArrayList<>();
+    public Portfolio() {
+        this.assets = new HashMap<>();
     }
 
-    public void addTransaction(Transaction transaction) {
-        this.transactions.add(transaction);
+    public void addToPortfolio(String cryptoId, double quantity) {
+        assets.put(cryptoId, assets.getOrDefault(cryptoId, 0.0) + quantity);
     }
 
-    // Additional methods to calculate portfolio value, etc.
+    public void removeFromPortfolio(String cryptoId, double quantity) {
+        double currentQty = assets.getOrDefault(cryptoId, 0.0);
+        double newQty = Math.max(0, currentQty - quantity);
+        if (newQty == 0) {
+            assets.remove(cryptoId);
+        } else {
+            assets.put(cryptoId, newQty);
+        }
+    }
+
+    public Map<String, Double> getAssets() {
+        return assets;
+    }
+
+    public List<CryptoAsset> getAssetsList() {
+        List<CryptoAsset> assetList = new ArrayList<>();
+        for (Map.Entry<String, Double> entry : assets.entrySet()) {
+            assetList.add(new CryptoAsset(entry.getKey(), entry.getValue()));
+        }
+        return assetList;
+    }
 }

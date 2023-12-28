@@ -7,51 +7,73 @@ import java.util.Map;
 public class UserManager {
 
     private static final String USER_DATA_FILE = "users.txt";
-    private static Map<String, String> users = new HashMap<>();
+    private static Map<String, User> users = new HashMap<>();
 
     static {
         loadUsers();
     }
 
     public static boolean registerUser(String username, String password) {
-        // Check if user already exists
         if (users.containsKey(username)) {
-            return false; // User already exists
+            return false;
         }
-
-        // Register new user
-        users.put(username, password);
+        users.put(username, new User(username, password, 0.0)); // Assuming default balance is 0.0
         saveUsers();
         return true;
     }
 
     public static boolean authenticateUser(String username, String password) {
-        String correctPassword = users.get(username);
-        return correctPassword != null && correctPassword.equals(password);
+        User user = users.get(username);
+        return user != null && user.getPassword().equals(password);
     }
 
     private static void loadUsers() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(USER_DATA_FILE))) {
+        File file = new File(USER_DATA_FILE);
+        if (!file.exists()) {
+            System.out.println("User data file does not exist. A new file will be created.");
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(":", 2);
-                if (parts.length == 2) {
-                    users.put(parts[0], parts[1]);
+                String[] parts = line.split(":", 3);
+                if (parts.length == 3) {
+                    String username = parts[0];
+                    String password = parts[1];
+                    double balance;
+                    try {
+                        balance = Double.parseDouble(parts[2].replace(",", "."));
+                    } catch (NumberFormatException e) {
+                        System.err.println("Invalid balance format for user " + username);
+                        continue;
+                    }
+                    users.put(username, new User(username, password, balance));
                 }
             }
         } catch (IOException e) {
-            // Handle exceptions or create a new file if doesn't exist
-            System.out.println("No existing user data. A new file will be created.");
+            System.err.println("Error reading user data: " + e.getMessage());
+        }
+
+    }
+
+    public static void saveUsers() {
+        try (PrintWriter out = new PrintWriter(new FileWriter(USER_DATA_FILE))) {
+            for (Map.Entry<String, User> entry : users.entrySet()) {
+                User user = entry.getValue();
+                // Format might automatically be in 0.00 format but ensure consistency if changing locales
+                out.printf("%s:%s:%.2f\n", user.getUsername(), user.getPassword(), user.getBalance());
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving user data: " + e.getMessage());
         }
     }
 
-    private static void saveUsers() {
-        try (PrintWriter out = new PrintWriter(new FileWriter(USER_DATA_FILE))) {
-            for (Map.Entry<String, String> entry : users.entrySet()) {
-                out.println(entry.getKey() + ":" + entry.getValue());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void updateUserBalance(String username, double newBalance) {
+        User user = users.get(username);
+        if (user != null) {
+            user.setBalance(newBalance);
+            saveUsers();
         }
     }
 }
