@@ -16,7 +16,7 @@ class Portfolio {
         assets.put(cryptoId, assets.getOrDefault(cryptoId, 0.0) + quantity);
     }
 
-    public void removeFromPortfolio(String cryptoId, double quantity) {
+    public void removeQuantity(String cryptoId, double quantity) {
         double currentQty = assets.getOrDefault(cryptoId, 0.0);
         double newQty = Math.max(0, currentQty - quantity);
         if (newQty == 0) {
@@ -36,5 +36,14 @@ class Portfolio {
             assetList.add(new CryptoAsset(entry.getKey(), entry.getValue()));
         }
         return assetList;
+    }
+
+    public List<String> getOwnedCryptoNames() {
+        return new ArrayList<>(assets.keySet());
+    }
+
+    public CryptoAsset getAsset(String cryptoId) {
+        Double quantity = assets.get(cryptoId);
+        return (quantity != null) ? new CryptoAsset(cryptoId, quantity) : null;
     }
 }

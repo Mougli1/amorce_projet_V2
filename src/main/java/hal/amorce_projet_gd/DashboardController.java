@@ -232,15 +232,14 @@ public class DashboardController {
     }
 
 
+    // Log transactions
     private void logTransaction(String type, String crypto, double amount, double pricePerUnit) {
         transactionHistory.add(new Transaction(type, crypto, amount, pricePerUnit, LocalDateTime.now()));
         System.out.println("Logged: " + type + ", " + crypto + ", " + amount); // Debug line
     }
 
 
-    private void handleSell() {
-        // Your existing handleSell method
-    }
+
     private void handleBuy() {
 
         List<String> cryptoChoices = Arrays.asList("bitcoin", "ethereum", "litecoin"); // Add more as needed
@@ -256,6 +255,93 @@ public class DashboardController {
         } else {
             // User cancelled the dialog or closed the dialog without input
         }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Updated handleSell method
+    @FXML
+    protected void handleSell() {
+        // Choose the cryptocurrency to sell
+        ChoiceDialog<String> dialog = new ChoiceDialog<>("", portfolio.getOwnedCryptoNames());
+        dialog.setTitle("Sell Cryptocurrency");
+        dialog.setHeaderText("Select a cryptocurrency to sell");
+        dialog.setContentText("Available cryptocurrencies:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(this::executeSell);
+    }
+
+    // Execute selling process
+    private void executeSell(String cryptoName) {
+        TextInputDialog amountDialog = new TextInputDialog();
+        amountDialog.setTitle("Sell " + cryptoName);
+        amountDialog.setHeaderText("Enter the amount of " + cryptoName + " to sell");
+        amountDialog.setContentText("Amount:");
+        Optional<String> amountResult = amountDialog.showAndWait();
+        amountResult.ifPresent(amountStr -> sellCrypto(cryptoName, amountStr));
+    }
+
+    // Process selling crypto
+    private void sellCrypto(String cryptoName, String amountStr) {
+        try {
+            double amount = Double.parseDouble(amountStr);
+            CryptoAsset asset = portfolio.getAsset(cryptoName);
+            if (asset != null && amount <= asset.getQuantity()) {
+                double currentPrice = getCurrentPrice(cryptoName); // Implement this method
+                double transactionAmount = amount * currentPrice;
+                portfolio.removeQuantity(cryptoName, amount);
+                balance += transactionAmount;
+                updateBalanceLabel();
+                updatePortfolioDisplay();
+                logTransaction("Sell", cryptoName, amount, currentPrice);
+            } else {
+                showInsufficientAssetMessage(cryptoName);
+            }
+        } catch (NumberFormatException e) {
+            showInvalidInputMessage();
+        }
+    }
+    private double getCurrentPrice(String cryptoId) {
+        // Assuming you have a CoinGeckoApiClient instance named 'client'
+        Map<String, Map<String, Double>> prices = client.getPrice(cryptoId, "usd");
+        return prices.get(cryptoId).get("usd");  // get USD price of the given crypto
+    }
+
+    private void showInsufficientAssetMessage(String cryptoName) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Error Selling Crypto");
+        alert.setHeaderText("Insufficient " + cryptoName + "!");
+        alert.setContentText("You don't have enough " + cryptoName + " to sell.");
+        alert.showAndWait();
     }
 
     // Implement other methods as needed

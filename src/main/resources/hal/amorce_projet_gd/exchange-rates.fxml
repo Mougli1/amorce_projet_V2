@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="hal.amorce_projet_gd.ExchangeRatesController" spacing="10" alignment="CENTER">
-    <!-- Labels for displaying exchange rates -->
-    <Label fx:id="btcRate" text="BTC: "/>
-    <Label fx:id="ethRate" text="ETH: "/>
-    <!-- Add more labels for other currencies as needed -->
-</VBox>
