@@ -1,27 +1,26 @@
 package hal.amorce_projet_gd;
 
-import java.time.LocalDateTime;  // Import the LocalDateTime class
+import java.time.LocalDateTime;
 
 public class Transaction {
-    private String id;
-    private LocalDateTime date;
-    private String currencyId;
-    private double amount;
-    private double rate; // The exchange rate at the time of the transaction
-    private TransactionType type; // This could be BUY or SELL
+    private String type; // "Recharge", "Buy", "Sell"
+    private String crypto; // Cryptocurrency code, e.g., "BTC", "ETH"
+    private double amount; // Amount of currency or crypto
+    private double pricePerUnit; // Price per unit for buy/sell
+    private LocalDateTime dateTime; // Date and time of the transaction
 
-    // Constructor
-    public Transaction(String id, LocalDateTime date, String currencyId, double amount, double rate, TransactionType type) {
-        this.id = id;
-        this.date = date;
-        this.currencyId = currencyId;
-        this.amount = amount;
-        this.rate = rate;
+    public Transaction(String type, String crypto, double amount, double pricePerUnit, LocalDateTime dateTime) {
         this.type = type;
+        this.crypto = crypto;
+        this.amount = amount;
+        this.pricePerUnit = pricePerUnit;
+        this.dateTime = dateTime;
     }
 
-    // Getters and Setters
-    // ... (implement all necessary getters and setters)
-
-    // Additional methods as necessary
+    // Getters
+    public String getType() { return type; }
+    public String getCrypto() { return crypto; }
+    public double getAmount() { return amount; }
+    public double getPricePerUnit() { return pricePerUnit; }
+    public LocalDateTime getDateTime() { return dateTime; }
 }

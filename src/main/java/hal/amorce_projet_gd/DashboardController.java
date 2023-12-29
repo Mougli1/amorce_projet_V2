@@ -6,16 +6,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import com.litesoftwares.coingecko.CoinGeckoApiClient;
 import com.litesoftwares.coingecko.impl.CoinGeckoApiClientImpl;
@@ -25,7 +20,6 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
@@ -49,6 +43,7 @@ public class DashboardController {
     private CoinGeckoApiClient client = new CoinGeckoApiClientImpl();
     private String username;
     private double balance = 1000.0; // Assume starting balance
+    private List<Transaction> transactionHistory = new ArrayList<>();
 
     public void initialize() {
         setupPortfolioTable();
@@ -73,10 +68,7 @@ public class DashboardController {
     private void updateBalanceLabel() {
         balanceLabel.setText(String.format("Solde actuel: %.2f USD", balance));
     }
-    @FXML
-    protected void handleHistory() {
-        // Implement your history view logic here
-    }
+
 
     @FXML
     protected void handleBTC() throws Exception {
@@ -144,24 +136,14 @@ public class DashboardController {
                 balance += amount;
                 updateBalanceLabel();
                 UserManager.updateUserBalance(username, balance);
+                logTransaction("Recharge", "USD", amount, 1.0); // Price per unit for recharge can be 1 as it's a direct currency input
             } catch (NumberFormatException e) {
                 // Error handling for invalid input
             }
         });
     }
 
-    private void handleBuy() {
-        List<String> cryptoChoices = Arrays.asList("bitcoin", "ethereum", "litecoin"); // Add more as needed
-        ChoiceDialog<String> cryptoChoiceDialog = new ChoiceDialog<>("bitcoin", cryptoChoices);
-        cryptoChoiceDialog.setTitle("Choose Cryptocurrency");
-        cryptoChoiceDialog.setHeaderText("Choose which cryptocurrency to buy");
-        cryptoChoiceDialog.setContentText("Available cryptocurrencies:");
-        Optional<String> cryptoResult = cryptoChoiceDialog.showAndWait();
-        if (!cryptoResult.isPresent()) return; // User cancelled the dialog
 
-        String chosenCrypto = cryptoResult.get();
-        fetchAndBuyCrypto(chosenCrypto);
-    }
 
     private void fetchAndBuyCrypto(String cryptoId) {
         try {
@@ -179,9 +161,9 @@ public class DashboardController {
 
     private void promptForPurchase(String crypto, double price) {
         TextInputDialog dialog = new TextInputDialog("1");
-        dialog.setTitle("Buy Cryptocurrency");
-        dialog.setHeaderText("Current price of " + crypto + " is $" + price);
-        dialog.setContentText("Enter amount to buy:");
+        dialog.setTitle("Acheter des cryptomonnaies");
+        dialog.setHeaderText("Le prix actuel de " + crypto + " est $" + price);
+        dialog.setContentText("Entrer le montant à acheter");
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(amountStr -> {
             try {
@@ -193,26 +175,87 @@ public class DashboardController {
                     updateBalanceLabel();
                     updatePortfolioDisplay();
                     UserManager.updateUserBalance(username, balance);
-                    // Optionally update user's portfolio in persistent storage
+                    logTransaction("Acheter", crypto, unitsToBuy, price); // Using the 'crypto' parameter
                 } else {
-                    // Not enough balance
+                    // Show insufficient funds message
+                    showInsufficientFundsMessage();
                 }
             } catch (NumberFormatException e) {
-                // Invalid input
+                // Handle invalid input
+                showInvalidInputMessage();
             }
         });
     }
 
 
+    private void showInsufficientFundsMessage() {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Erreur de Transaction");
+        alert.setHeaderText("Solde insuffisant !");
+        alert.setContentText("Vous n'avez pas assez de fonds pour réaliser cet achat !");
+        alert.showAndWait();
+    }
+
+    private void showInvalidInputMessage() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Input");
+        alert.setHeaderText("Invalid Purchase Amount");
+        alert.setContentText("Please enter a valid number.");
+        alert.showAndWait();
+    }
 
 
+    @FXML
+    protected void handleHistory() {
+        contentArea.getChildren().clear();
+        TableView<Transaction> historyTable = new TableView<>();
+
+        TableColumn<Transaction, String> typeColumn = new TableColumn<>("Type");
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+
+        TableColumn<Transaction, String> cryptoColumn = new TableColumn<>("Crypto");
+        cryptoColumn.setCellValueFactory(new PropertyValueFactory<>("crypto"));
+
+        TableColumn<Transaction, Number> amountColumn = new TableColumn<>("Amount");
+        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+
+        TableColumn<Transaction, Number> priceColumn = new TableColumn<>("Price/Unit");
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("pricePerUnit"));
+
+        TableColumn<Transaction, LocalDateTime> dateColumn = new TableColumn<>("Date");
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("dateTime"));
+
+        historyTable.getColumns().addAll(typeColumn, cryptoColumn, amountColumn, priceColumn, dateColumn);
+        historyTable.setItems(FXCollections.observableArrayList(transactionHistory));
+
+        contentArea.getChildren().add(historyTable);
+    }
 
 
-
+    private void logTransaction(String type, String crypto, double amount, double pricePerUnit) {
+        transactionHistory.add(new Transaction(type, crypto, amount, pricePerUnit, LocalDateTime.now()));
+        System.out.println("Logged: " + type + ", " + crypto + ", " + amount); // Debug line
+    }
 
 
     private void handleSell() {
         // Your existing handleSell method
+    }
+    private void handleBuy() {
+
+        List<String> cryptoChoices = Arrays.asList("bitcoin", "ethereum", "litecoin"); // Add more as needed
+        ChoiceDialog<String> cryptoChoiceDialog = new ChoiceDialog<>("bitcoin", cryptoChoices);
+        cryptoChoiceDialog.setTitle("Choose Cryptocurrency");
+        cryptoChoiceDialog.setHeaderText("Choose which cryptocurrency to buy");
+        cryptoChoiceDialog.setContentText("Available cryptocurrencies:");
+        Optional<String> cryptoResult = cryptoChoiceDialog.showAndWait();
+        if (cryptoResult.isPresent()) {
+            String chosenCrypto = cryptoResult.get(); // Declared and assigned here
+            fetchAndBuyCrypto(chosenCrypto);
+
+        } else {
+            // User cancelled the dialog or closed the dialog without input
+        }
     }
 
     // Implement other methods as needed
