@@ -60,15 +60,6 @@ public class DashboardController {
         portfolioTableView.getColumns().addAll(cryptoColumn, quantityColumn);
     }
 
-    private void updatePortfolioDisplay() {
-        portfolioTableView.setItems(FXCollections.observableArrayList(portfolio.getAssetsList()));
-    }
-
-
-    private void updateBalanceLabel() {
-        balanceLabel.setText(String.format("Solde actuel: %.2f USD", balance));
-    }
-
 
     @FXML
     protected void handleBTC() throws Exception {
@@ -343,6 +334,29 @@ public class DashboardController {
         alert.setContentText("You don't have enough " + cryptoName + " to sell.");
         alert.showAndWait();
     }
+
+    public void setUser(String username) {
+        this.username = username;
+        User user = UserManager.getUser(username);
+        if (user != null) {
+            this.balance = user.getBalance();
+            this.portfolio = new Portfolio(user.getPortfolio()); // Adjust as needed
+            updateBalanceLabel();
+            updatePortfolioDisplay();
+        }
+    }
+
+    private void updateBalanceLabel() {
+        balanceLabel.setText(String.format("Current balance: %.2f", balance));
+    }
+
+    private void updatePortfolioDisplay() {
+        // Update portfolioTableView with the user's portfolio
+        // Ensure getAssetsList() or a similar method exists and correctly returns user's assets
+        portfolioTableView.setItems(FXCollections.observableArrayList(portfolio.getAssetsList()));
+    }
+
+
 
     // Implement other methods as needed
 }

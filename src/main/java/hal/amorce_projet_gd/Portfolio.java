@@ -5,11 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Portfolio {
+public class Portfolio {
     private Map<String, Double> assets; // maps crypto ID to quantity owned
 
     public Portfolio() {
         this.assets = new HashMap<>();
+    }
+
+    public Portfolio(Map<String, Double> initialAssets) {
+        this.assets = new HashMap<>(initialAssets);
     }
 
     public void addToPortfolio(String cryptoId, double quantity) {
@@ -37,13 +41,16 @@ class Portfolio {
         }
         return assetList;
     }
-
     public List<String> getOwnedCryptoNames() {
         return new ArrayList<>(assets.keySet());
     }
-
     public CryptoAsset getAsset(String cryptoId) {
         Double quantity = assets.get(cryptoId);
-        return (quantity != null) ? new CryptoAsset(cryptoId, quantity) : null;
+        if (quantity != null) {
+            return new CryptoAsset(cryptoId, quantity);
+        } else {
+            return null; // or you might want to handle this case differently
+        }
     }
+    // Other necessary methods
 }
