@@ -99,6 +99,12 @@ public class DashboardController {
         contentArea.getChildren().clear();
     }
 
+    @FXML
+    protected void handlePortefeuille() {
+        portfolioTableView.setVisible(true);
+        contentArea.getChildren().clear();
+    }
+
     private void executePortfolioAction(String action) {
         switch (action) {
             case "Recharger":
