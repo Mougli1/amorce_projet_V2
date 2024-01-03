@@ -1,39 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.StackPane?>
 
-<BorderPane fx:id="mainPane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hal.amorce_projet_gd.DashboardController">
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="mainPane" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hal.amorce_projet_gd.DashboardController">
     <left>
-        <!-- Barre latérale avec des boutons et le solde pour la navigation -->
-        <VBox spacing="10">
-            <Button text="Historique" fx:id="historyButton" onAction="#handleHistory"/>
-            <Button text="BTC" fx:id="btcButton" onAction="#handleBTC"/>
-            <Button text="ETH" fx:id="ethButton" onAction="#handleETH"/>
-            <Button text="SOL" fx:id="solButton" onAction="#handleSOL"/>
-            <Button text="Mon Portefeuille" fx:id="portfolioButton" onAction="#handlePortfolio"/>
-            <Label fx:id="balanceLabel" text="Solde actuel: 1000.0 USD"/>
+        <VBox prefHeight="386.0" prefWidth="247.0" spacing="20" style="-fx-background-color: #4CAF50;">
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="20" />
+            </padding>
+            <Button fx:id="portefeuilleButton" onAction="#handlePortefeuille" style="-fx-background-color: #FFFFFF; -fx-text-fill: #4CAF50; -fx-font-weight: bold;" text="Mon Portefeuille" />
+            <Button fx:id="portfolioButton" onAction="#handlePortfolio" style="-fx-background-color: #FFFFFF; -fx-text-fill: #4CAF50; -fx-font-weight: bold;" text="Transaction" />
+            <Button fx:id="historyButton" onAction="#handleHistory" style="-fx-background-color: #FFFFFF; -fx-text-fill: #4CAF50; -fx-font-weight: bold;" text="Historique" />
+            <Label style="-fx-text-fill: #FFFFFF; -fx-font-size: 16px; -fx-font-weight: bold;" text="Crypto-monnaie" />
+
+            <Button fx:id="btcButton" onAction="#handleBTC" style="-fx-background-color: #FFFFFF; -fx-text-fill: #4CAF50; -fx-font-weight: bold;" text="BTC" />
+            <Button fx:id="ethButton" onAction="#handleETH" style="-fx-background-color: #FFFFFF; -fx-text-fill: #4CAF50; -fx-font-weight: bold;" text="ETH" />
+            <Button fx:id="solButton" onAction="#handleSOL" style="-fx-background-color: #FFFFFF; -fx-text-fill: #4CAF50; -fx-font-weight: bold;" text="SOL" />
+            <Label fx:id="balanceLabel" style="-fx-text-fill: #FFFFFF; -fx-font-size: 12px; -fx-font-weight: bold;" text="Solde actuel: 1000.0 USD" />
         </VBox>
+
     </left>
     <center>
-        <!-- VBox to hold both the TableView and the dynamic content StackPane -->
-        <VBox fx:id="centerBox" spacing="10">
-            <!-- TableView for displaying portfolio -->
-            <TableView fx:id="portfolioTableView" prefHeight="200.0" prefWidth="300.0">
+        <StackPane>
+            <TableView fx:id="portfolioTableView" prefHeight="200.0" prefWidth="300.0" visible="false">
                 <!-- Columns are added dynamically in the DashboardController -->
             </TableView>
-
-            <!-- Placeholder for dynamic content -->
-            <StackPane fx:id="contentArea" prefHeight="200.0" prefWidth="300.0">
-                <!-- Initially empty, will hold dynamic content like the Bitcoin price chart -->
+            <StackPane fx:id="contentArea" prefHeight="378.0" prefWidth="705.0">
+                <!-- Placeholder for dynamic content -->
             </StackPane>
-        </VBox>
+        </StackPane>
     </center>
 </BorderPane>
-
-
-
